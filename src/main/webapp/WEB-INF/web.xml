@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.4"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<description>卓瑞集成系统</description>
+	<display-name />
+	<!-- 框架处理类 -->
+	<servlet>
+		<servlet-name>zm</servlet-name>
+		<servlet-class>web.sys.ActionServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<!--正常访问方式 -->
+	<servlet-mapping>
+		<servlet-name>zm</servlet-name>
+		<url-pattern>*.zm</url-pattern>
+	</servlet-mapping>
+	<!-- 框架Ajax处理类 -->
+	<servlet>
+		<servlet-name>data</servlet-name>
+		<servlet-class>web.sys.AjaxActionServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<!--正常访问方式 -->
+	<servlet-mapping>
+		<servlet-name>data</servlet-name>
+		<url-pattern>*.data</url-pattern>
+	</servlet-mapping>
+	
+	<!--生成图片和验证码 -->
+	<servlet>
+		<servlet-name>image</servlet-name>
+		<servlet-class>com.zm.base.ImageCode</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	<!-- druid -->
+	<!--文件下载 -->
+	<servlet>
+		<servlet-name>DownFile</servlet-name>
+		<servlet-class>com.zm.base.file.DownFileService</servlet-class>
+	</servlet>
+
+	<!--短信相关开发 -->
+	<servlet>
+		<servlet-name>SMSSubHook</servlet-name>
+		<servlet-class>com.zm.base.sms.SubHookService</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SMSSubHook</servlet-name>
+		<url-pattern>/SMSSubHook</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>image</servlet-name>
+		<url-pattern>/image</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>DownFile</servlet-name>
+		<url-pattern>/DownFile</url-pattern>
+	</servlet-mapping>
+	<filter>
+		<filter-name>FrameFilter</filter-name>
+		<filter-class>web.sys.filter.FrameAllow</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>FrameFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- 设置会话时长 -->
+	<session-config>
+		<session-timeout>7200</session-timeout>
+	</session-config>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/api/private/common.data?doAction=err404</location>
+	</error-page>
+	<login-config>
+		<auth-method>BASIC</auth-method>
+	</login-config>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+	<mime-mapping>
+		<extension>m3u8</extension>
+		<mime-type>application/vnd.apple.mpegurl</mime-type>
+	</mime-mapping>
+	<mime-mapping>
+		<extension>ts</extension>
+		<mime-type>video/MP2T</mime-type>
+	</mime-mapping>
+</web-app>

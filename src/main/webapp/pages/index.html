@@ -1,0 +1,551 @@
+<!DOCTYPE html>  
+<html>
+<head>  
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />  
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />  
+<title>Station</title>  
+<style type="text/css">  
+html{height:100%}  
+body{height:100%;margin:0px;padding:0px}  
+#container{height:100%}  
+.chartdiv{
+	width: 1870px;
+}
+#chart1{
+	width: 1840px;
+	height:400px;
+	z-index: 9998;
+	position: absolute;
+	left:50px;
+	top:20px;
+	background: white;
+}
+#chart2{
+	width: 1840px;
+	height:400px;
+	z-index: 9998;
+	position: absolute;
+	left:50px;
+	bottom:20px;
+	background: white;
+}
+
+.hidediv{
+	width: 30px;
+	height: 390px;
+	position: absolute;
+	z-index: 9999;
+	left: 20px;
+	color: dodgerblue;
+	cursor: pointer;
+	line-height: 400px;
+	font-size: 20px;
+	padding: 5px;
+	text-align: center;
+	background: #f8f8f8;
+}
+.hide{
+	display: none;
+}
+.btndiv{
+	width: 150px;
+	height: 30px;
+	position: absolute;
+	z-index: 9999;
+	left: 20px;
+	top:450px;
+}
+.pingbtn{
+	display: inline-block;
+	width: 60px;
+	text-align: center;
+	padding: 3px;
+	border: 2px solid gray;
+	cursor: pointer;
+}
+.asubtn{
+	display: inline-block;
+	width: 60px;
+	text-align: center;
+	padding: 3px;
+	border: 2px solid gray;
+	cursor: pointer;
+}
+.this{
+	color:#c11111;
+	border-color: #C11111;
+}
+</style>  
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=a1wh9uLWryxoeeX7Iswn2Yq7kPAVmwxm"></script>
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.3.0/echarts.min.js"></script>
+</head>  
+ 
+<body>  
+<div id="container"></div> 
+<div class="chartdiv">
+	<div id="chart1"></div>
+	<div class="hidediv chart1" style="top:20px" onclick="hideThis('chart1')"><</div>
+</div>
+<div class="chartdiv">
+	<div id="chart2"></div>
+	<div class="hidediv chart2" style="bottom:20px" onclick="hideThis('chart2')"><</div>
+</div>
+<div class="btndiv">
+	<div class="pingbtn this btn" onclick="switchLine('ping')">ping</div>
+	<div class="asubtn btn" onclick="switchLine('asu')">Asu</div>
+</div>
+<script type="text/javascript"> 
+var baseIp = ['120.27.250.45'];
+var color1 = ['#C00202','#FC0000','#FA7575','#FCDBDB','#FAC5C5'];
+var color2 = ['#00F8FA','#00BDFA','#0447FA'];
+var pingLineArray = [],asuLineArray = [];
+var baseStation = [
+	{name:'安徽省合肥市蜀山区方兴大道辅路;合肥永升机械有限公司南567米',lon:117.20551 ,lat:31.72584,CID:97571072,LAC:22022,locate:true},
+	{name:'安徽省合肥市蜀山区方兴大道;合力综合楼南571米', lon:117.20977, lat:31.72612,CID:73300206,LAC:22022,locate:true},
+	{name:'安徽省合肥市蜀山区方兴大道;合力综合楼东南621米', lon:117.20977, lat:31.72612,CID:73300204,LAC:22022,locate:true},
+	{name:'安徽省合肥市蜀山区方兴大道;合力综合楼东南718米', lon:117.21281, lat:31.72768,CID:98055726,LAC:22022,locate:true},
+	{name:'安徽省合肥市蜀山区方兴大道;合力综合楼南563米',lon:117.20741, lat:31.72365,CID:97554177,LAC:22022,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;王小郢北411米', lon:117.23735 ,lat:31.72874,CID:97564973,LAC:22022,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;王小郢北385米', lon:117.24193, lat:31.72757,CID:98122286,LAC:22022,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道辅路;方大郢东189米', lon:117.25393, lat:31.72724,CID:98318342,LAC:22022,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道辅路;裕田汽车科技产业园东南379米', lon:117.25393, lat:31.72724,CID:98318341,LAC:22022,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;卫田庄南375米', lon:117.26747 ,lat:31.73059,CID:98214701,LAC:22113,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;岗头东北67米', lon:117.26485 ,lat:31.72603,CID:98128940,LAC:22113,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;黄四岗东北583米', lon:117.28786 ,lat:31.72634,CID:74007022,LAC:22113,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;陈北份北550米', lon:117.28786, lat:31.72634,CID:74007020,LAC:22113,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;陈北份北533米', lon:117.28786 ,lat:31.72634,CID:74007021,LAC:22113,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;裕田汽车科技产业园东南179米', lon:117.25711, lat:31.72621,CID:98304257,LAC:22022,locate:true},
+	{name:'安徽省合肥市肥西县宿松路;安徽审计职业学院(方兴大道)内,方大郢东南531米', lon:117.25711, lat:31.72621,CID:98304258,LAC:22022,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道辅路;裕田汽车科技产业园东南300米', lon:117.257095346774, lat:31.726066596113,CID:98318351,LAC:22022,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;方大郢东254米', lon:117.25393, lat:31.72724,CID:98318340,LAC:22022,locate:true},
+	{name:'安徽省合肥市蜀山区方兴大道;合肥杰事杰新材料股份有限公司西南218米', lon:117.22091, lat:31.72711,CID:17668205,LAC:22022,locate:true},
+	{name:'安徽省合肥市蜀山区青鸾路;宝供合肥宝荣基地西北566米',lon:117.21289, lat:31.72818,CID:98055725,LAC:22022,locate:true},
+	{name:'安徽省合肥市蜀山区方兴大道;宝供合肥宝荣基地北452米', lon:117.22091, lat:31.72711,CID:17668206,LAC:22022,locate:true},
+	{name:'安徽省合肥市蜀山区方兴大道;宝供合肥宝荣基地北460米',lon:117.22513, lat:31.72712,CID:256511534,LAC:22022,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;董郢北320米', lon:117.23287 ,lat:31.727669,CID:138976174,LAC:22022,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道辅路;丁小郢东502米', lon:117.22513 ,lat:31.72712,CID:256511533,LAC:22022,locate:true},
+	{name:'安徽省合肥市肥西县天都路;丁小郢东124米', lon:117.23287, lat:31.727669,CID:138976173,LAC:22022,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道辅路;丁小郢东267米', lon:117.23735, lat:31.72874,CID:97564974,LAC:22022,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;王小郢北406米', lon:117.24491, lat:31.72747,CID:17690990,LAC:22022,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道辅路;安徽鸣华大厦西南264米', lon:117.24193 ,lat:31.72757,CID:98122285,LAC:22022,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;安徽鸣华大厦南133米', lon:117.24491, lat:31.72747,CID:17690989,LAC:22022,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;方大郢西173米', lon:117.24959, lat:31.72525,CID:97550084,LAC:22022,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;裕田汽车科技产业园东南211米', lon:117.25868, lat:31.72739,CID:98304302,LAC:22022,locate:true},
+	
+	{name:'安徽省合肥市肥西县方兴大道辅路;方大郢东189米', lon:117.26439582130655, lat:31.731537835459008,CID:98314342,LAC:22022},
+	{name:'安徽省合肥市肥西县方兴大道辅路;裕田汽车科技产业园东南379米', lon:117.26974653437617, lat:31.730341816994795,CID:98314341,LAC:22022},
+	
+	{name:'安徽省合肥市肥西县G3(京台高速);岗头西466米', lon:117.26485, lat:31.72603,CID:98128942,LAC:22113,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道辅路;岗头西北296米', lon:117.26481, lat:31.72592,CID:98128906,LAC:22113,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;岗头西474米', lon:117.25868, lat:31.72739,CID:98304301,LAC:22022,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道辅路;岗头北92米', lon:117.26286 ,lat:31.72985,CID:243721901,LAC:22113,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;岗头东162米', lon:117.26998, lat:31.72707,CID:73220846,LAC:22113,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道辅路;卫田庄南413米', lon:117.26998, lat:31.72707,CID:73220845,LAC:22113,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;卫田庄南385米', lon:117.27432, lat:31.72701,CID:138946734,LAC:22113,locate:true},
+	{name:'安徽省合肥市肥西县紫云路人行天桥;滨湖世纪城西110米', lon:117.27432, lat:31.72701,CID:138946733,LAC:22113,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;高速滨湖时代广场-金融中心东北129米', lon:117.28101, lat:31.72581,CID:98128428,LAC:22113,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;黄四岗北516米', lon:117.28101, lat:31.72581,CID:98128429,LAC:22113,locate:true},
+	{name:'安徽省合肥市肥西县方兴大道;黄四岗北525米', lon:117.28586 ,lat:31.72965,CID:73211373,LAC:22113,locate:true}
+];
+// 创建地图实例  
+var map = new BMap.Map("container");
+
+// 创建点坐标  
+var point = new BMap.Point(117.26439582130655,31.731537835459008);
+
+// 初始化地图，设置中心点坐标和地图级别  
+map.centerAndZoom(point, 15);
+map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+
+function hideThis(id){
+	$('#'+id).toggleClass('hide');
+	if($('#'+id).hasClass('hide')){
+		$('.'+id).text('>');
+	}else{
+		$('.'+id).text('<');
+	}
+}
+
+
+//获取数据并渲染
+$(function(){
+	drawStation();
+	$.getJSON('data1.json',function(data){
+		checkLocationPoint(data.locationLogs,data.pingLogs[baseIp[0]],data.baseStationLogs,new BMap.Point(117,31),new BMap.Point(117,31),{},{},[],[],[],[],[],'chart1','',[]);
+	})
+	$.getJSON('data2.json',function(data){
+		checkLocationPoint(data.locationLogs,data.pingLogs[baseIp[0]],data.baseStationLogs,new BMap.Point(117,31),new BMap.Point(117,31),{},{},[],[],[],[],[],'chart2','',[]);
+	})
+})
+
+//标注基站
+function drawStation(){
+	baseStation.forEach(function(el,index){
+		if(el.locate){
+			var spoint = new BMap.Point(el.lon,el.lat);
+			var convertor = new BMap.Convertor();
+			var pointArr = [];
+			pointArr.push(spoint);
+			convertor.translate(pointArr, 1, 5, function(data){
+				if(data.status === 0) {
+					el.lon = data.points[0].lng;
+					el.lat = data.points[0].lat;
+					var stationmarker = new BMap.Marker(data.points[0]);
+					map.addOverlay(stationmarker);
+					var labelgg = new BMap.Label(el.CID,{offset:new BMap.Size(-20,-20)});
+					stationmarker.setLabel(labelgg); //添加GPS label
+					//基站点击事件
+					 stationmarker.addEventListener("click", function(e){
+					     openStationInfoWindow(el,data.points[0])
+					 });
+				}
+			})
+		}
+	})
+}
+
+ 
+//打开基站信息窗口
+function openStationInfoWindow(station,spoint){
+	var opts = {    
+	    width : 250,     // 信息窗口宽度    
+	    height: 200,     // 信息窗口高度    
+	    title : "基站信息"  // 信息窗口标题   
+	}
+	var info = '<div style="font-size:14px">基站位置：<b>'+station.name+'</b><br>lon：<b>'+station.lon+'</b><br>lat：<b>'+station.lat+'</b><br>CID：<b>'+station.CID+'</b><br>LAC：<b>'+station.LAC+'</b><br><div>';
+	var infoWindow = new BMap.InfoWindow(info, opts);  // 创建信息窗口对象    
+	map.openInfoWindow(infoWindow, spoint);      // 打开信息窗口
+}
+
+//打开ping信息窗口
+function openPingInfoWindow(ping,spoint){
+	var opts = {    
+	    width : 250,     // 信息窗口宽度    
+	    height: 200,     // 信息窗口高度    
+	    title : "ping信息"  // 信息窗口标题   
+	}
+	var info = '<div style="font-size:14px">响应时间：<b>'+ping.endTimeStr+'</b><br>响应状态：<b>'+ping.status+'</b><br>响应结果（avg）：<b>'+ping.result.avgRtt+'</b><br>响应结果（max）：<b>'+ping.result.maxRtt+'</b><br>响应结果（min）：<b>'+ping.result.minRtt+'</b><br><div>';
+	var infoWindow = new BMap.InfoWindow(info, opts);  // 创建信息窗口对象    
+	map.openInfoWindow(infoWindow, spoint);      // 打开信息窗口
+}
+
+//打开asu信息窗口
+function openAsuInfoWindow(asu,spoint){
+	var opts = {    
+	    width : 80,     // 信息窗口宽度    
+	    height: 80,     // 信息窗口高度    
+	    title : "asu信息"  // 信息窗口标题   
+	}
+	var info = '<div style="font-size:14px">asu：<b>'+asu+'</b>';
+	var infoWindow = new BMap.InfoWindow(info, opts);  // 创建信息窗口对象    
+	map.openInfoWindow(infoWindow, spoint);      // 打开信息窗口
+}
+
+// 计算两点距离 
+function GetDistance( lat1,  lng1,  lat2,  lng2){
+    var radLat1 = lat1*Math.PI / 180.0;
+    var radLat2 = lat2*Math.PI / 180.0;
+    var a = radLat1 - radLat2;
+    var  b = lng1*Math.PI / 180.0 - lng2*Math.PI / 180.0;
+    var s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a/2),2) +
+    Math.cos(radLat1)*Math.cos(radLat2)*Math.pow(Math.sin(b/2),2)));
+    s = s *6378.137 ;// EARTH_RADIUS;
+    s = Math.round(s * 10000) / 10000;
+    return s;
+}
+
+//获取当前ping的基站
+function getStation(timestr,slogArray){
+	var station,slog=slogArray[0];
+	if(timecheck(timestr,slog.timeStr)==0){
+		baseStation.forEach(function(el,index){
+			if(el.CID == slog.CID){
+				station = el;
+				station.Asu = slog.Asu;
+				station.Dbm = slog.Dbm;
+				return true;
+			}
+		})
+		if(station){
+			return station;
+		}else{
+			return null;
+		}
+	}else{
+		slogArray.splice(0,1)
+		return getStation(timestr,slogArray);
+	}
+}
+ 
+ //校验PING请求点并绘制折线
+ var point1,point2;
+ var max = 0,min = 99;
+ function checkLocationPoint(locationLogs,pingLogs,baseStationLogs,pointmax,pointmin,resmax,resmin,xarr,yarr,sarr,asu,dbm,echartid,CID,markerArr){
+	 var location = locationLogs[0];
+	 var ping = pingLogs[0];
+	 if(timecheck(location.timeStr,ping.response.endTimeStr)==0){
+	 	var point3 = new BMap.Point(location.longitude,location.latitude);
+		point1 = point2;
+		point2 = point3;
+		//获取最大最小值
+		var value = ping.response.result.avgRtt;
+		if(point1&&point2){
+			//dbm.push(station?station.Dbm:0)
+			//获取当前基站信息
+			var station = getStation(ping.response.endTimeStr,baseStationLogs);
+			if(station){
+				var dis = GetDistance(location.latitude,location.longitude,station.lat,station.lon)
+				sarr.push(dis);
+				if(CID != station.CID){
+					CID = station.CID;
+					var mk = {
+						name:'基站切换点',
+						value:CID,
+						xAxis:ping.response.endTimeStr.substring(ping.response.endTimeStr.length-12,ping.response.endTimeStr.length),
+						yAxis:dis
+					}
+					markerArr.push(mk)
+				}
+			}else{
+				sarr.push(0);
+			}
+			//if(parseInt(value)<=80&&parseInt(value)>10){
+				xarr.push(ping.response.endTimeStr.substring(ping.response.endTimeStr.length-12,ping.response.endTimeStr.length));
+				yarr.push(value);
+				
+				asu.push(station?station.Asu:0)
+				if(value>=max){
+					max =  value;
+					pointmax = point3;
+					resmax = ping.response;
+				}
+				if(value<min){
+					 min =  value;
+					 pointmin = point3;
+					 resmin = ping.response;
+				}
+			//}
+			drawPolyline(point1,point2,ping.response,station.Asu);
+		}
+		locationLogs.splice(0,1);
+		pingLogs.splice(0,1);
+	 }else if(timecheck(location.timeStr,ping.response.endTimeStr)==-1){
+		 locationLogs.splice(0,1);
+	 }else{
+		 pingLogs.splice(0,1);
+	 }
+	 if(locationLogs.length>0){
+		 checkLocationPoint(locationLogs,pingLogs,baseStationLogs,pointmax,pointmin,resmax,resmin,xarr,yarr,sarr,asu,dbm,echartid,CID,markerArr)
+	 }else{
+		 var maxIcon = new BMap.Icon("max.png", new BMap.Size(32, 32));
+		 var minIcon = new BMap.Icon("min.png", new BMap.Size(32, 32)); 
+		 var maxmarker = new BMap.Marker(pointmax, {icon: maxIcon});
+		 map.addOverlay(maxmarker); 
+		 maxmarker.addEventListener("click", function(e){
+		     openPingInfoWindow(resmax,pointmax) 
+		 });
+		 var minmarker = new BMap.Marker(pointmin, {icon: minIcon});
+		 map.addOverlay(minmarker); 
+		 minmarker.addEventListener("click", function(e){
+		     openPingInfoWindow(resmin,pointmin)  
+		 });
+		 //渲染echarts
+		 var option = {
+		     title: {
+		         text: echartid=='chart1'?'由西向东':'由东向西',
+				 left:100
+		     },
+		     tooltip: {
+		         trigger: 'axis'
+		     },
+		     legend: {
+		         data: ['ping','距离','Asu']
+		     },
+		     toolbox: {
+		         show: true,
+		         feature: {
+		             dataZoom: {
+		                 yAxisIndex: 'none'
+		             },
+		             dataView: {readOnly: false},
+		             magicType: {type: ['line', 'bar']},
+		             restore: {},
+		             saveAsImage: {}
+		         }
+		     },
+		     xAxis: {
+		         type: 'category',
+		         boundaryGap: false,
+		         data: xarr
+		     },
+			 dataZoom:[{
+			  　type:"inside"         //鼠标滚轮缩放
+			 }],
+		     yAxis: [
+				 {
+					 name:'ping',
+				     type: 'value',
+				     axisLabel: {
+				         formatter: '{value} ms',
+					 }
+				 },
+				 {
+					 name:'距离',
+				     type: 'value',
+				     axisLabel: {
+				         formatter: '{value} km',
+					 },
+					 min: 0,
+					 max: 3,
+					 position: 'right',
+					 offset: 10
+				 },
+				 {
+					 name:'Asu',
+				     type: 'value',
+					 position: 'left',
+					 offset: 60
+				 },
+				 // {
+					//  name:'Dbm',
+				 //     type: 'value',
+					//  position: 'right',
+					//  offset: 60
+				 // }
+			 ],
+		     series: [
+		         {
+		             name: 'ping',
+		             type: 'line',
+		             data: yarr,
+		             markPoint: {
+		                 data: [
+		                     {type: 'max', name: '最大值'},
+		                     {type: 'min', name: '最小值'}
+		                 ]
+		             }
+		         },
+				 {
+				     name: '距离',
+				     type: 'line',
+				     data: sarr,
+					 yAxisIndex: 1,
+					 markPoint: {
+					     data: markerArr,
+						 symbol:'pin'
+					 }
+				 },
+				 {
+				     name: 'Asu',
+				     type: 'line',
+				     data: asu,
+					 yAxisIndex: 2,
+					 markPoint: {
+					     data: [
+					         {type: 'max', name: '最大值'},
+					         {type: 'min', name: '最小值'}
+					     ]
+					 }
+				 },
+				 // {
+				 //     name: 'Dbm',
+				 //     type: 'line',
+				 //     data: dbm,
+					//  yAxisIndex: 3
+				 // }
+		     ]
+		 };
+		 echarts.init(document.getElementById(echartid)).setOption(option);
+		 point1 = null;
+		 point2 = null;
+		 max = 0;
+		 min = 99;
+		 switchLine('ping');
+	 }
+ }
+ 
+ //绘制折线
+ function drawPolyline(point1,point2,response,asu){
+	 var value = response.result.avgRtt
+	 var pingcolor = 'red',asucolor = 'blue';
+	 if(value>30&&value<=40){
+		 pingcolor = color1[0]
+	 }else if(value>40&&value<=50){
+		 pingcolor = color1[1]
+	 }else if(value>50&&value<=60){
+		 pingcolor = color1[2]
+	 }else if(value>60&&value<=70){
+		 pingcolor = color1[3]
+	 }else if(value>70&&value<=80){
+		 pingcolor = color1[4]
+	 }else if(value>80||value<=10){
+		 pingcolor = 'gray'
+	 }
+	 if(asu>=55&&asu<=65){
+		 asucolor = color2[0]
+	 }else if(asu>=65&&asu<75){
+		 asucolor = color2[1]
+	 }else if(asu>=75&&asu<=85){
+		 asucolor = color2[2]
+	 }else{
+		 asucolor = 'gray'
+	 }
+	 
+	 //ping线
+	 var pingline = new BMap.Polyline([
+	     point1,
+	     point2
+	     ],
+	     {strokeColor:pingcolor, strokeWeight:4, strokeOpacity:1}
+	     );
+	//Asu线
+	var Asuline = new BMap.Polyline([
+		point1,
+		point2
+		],
+		{strokeColor:asucolor, strokeWeight:4, strokeOpacity:1}
+		);
+	 map.addOverlay(pingline);
+	 map.addOverlay(Asuline);
+	 pingline.addEventListener("click", function(e){
+	       openPingInfoWindow(response,point2)
+	 }); 
+	 pingLineArray.push(pingline)
+	 Asuline.addEventListener("click", function(e){
+	       openAsuInfoWindow(asu,point2)
+	 }); 
+	 asuLineArray.push(Asuline)
+ }
+ 
+ 
+ function switchLine(type){
+	 $('.btn').removeClass('this');
+	 $('.'+type+'btn').addClass('this');
+	 asuLineArray.forEach(function(el){
+		 type=='asu'?el.show():el.hide();
+	 })
+	 pingLineArray.forEach(function(el){
+		 type=='ping'?el.show():el.hide();
+	 })
+ }
+ 
+ //时间校验,小于200ms
+ function timecheck(time1,time2){
+	 var date1 = new Date(time1.substring(0,time1.length-4)).getTime()+parseInt(time1.substring(time1.length-3,time1.length))
+	 var date2 = new Date(time2.substring(0,time2.length-4)).getTime()+parseInt(time2.substring(time2.length-3,time2.length))
+	// parseInt(time2.substring(time2.length-3,time2.length))
+	 var date3 = date1 - date2;
+	 //console.log(date3)
+	 if(date3>200){
+		 return 1
+	 }else if(date3<-200){
+		 return -1
+	 }
+	 else{
+		return 0 
+	 }
+ }
+</script>  
+</body>  
+</html>

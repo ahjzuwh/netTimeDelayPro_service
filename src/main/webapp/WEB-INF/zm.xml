@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<zm-web> 
+  <!-- 说明：系统域名 globals_sys_domain、 系统名globals_sys_name 、 虚拟目录的名称globals_sys_basename这三个为全局，任意页面直接使用 -->  
+  <!--系统框架配置 -->  
+  <frame-setting> 
+    <!--系统调试配置 -->  
+    <!--系统缓存配置 -->  
+    <sys-cache name="web.sys.cache">false</sys-cache>  
+    <!--系统是否自动加载模板,当为true时，缓存必须为false存在问题 -->  
+    <sys-reload name="web.sys.autoreload">true</sys-reload>  
+    <!--系统中文名 -->  
+    <sys-name name="domain" domain="https://wx.iacyun.com"/>  
+    <init-app> 
+      <app-class class="modules.base.com.InitSystem" init-method="init" destroy-method="destroy"/>  
+    </init-app>  
+    <!--系统错误信息配置 -->  
+    <err-config> 
+      <error name="001">操作失败</error>  
+      <error name="002">操作成功</error>  
+      <error name="003">数据库连接失败</error>  
+      <error name="004">该IP地址禁止访问</error>  
+      <error name="005">用户名密码错误</error>  
+      <error name="006">输入错误密码次数超过限定值，导致该用户已经锁定</error>  
+      <error name="007">非法访问</error>  
+      <error name="008">服务器忙</error>  
+      <error name="009">用户名不存在</error>  
+      <error name="010">验证码不正确</error>  
+      <error name="011">登录方式不正确</error>  
+      <error name="404">未找到请求页面</error>  
+      <error name="500">抱歉!系统发生错误</error> 
+    </err-config>  
+    <!--系统公共配置Globals.SYS_COM_CONFIG.get("usealioss") -->  
+    <com-config> 
+      <!-- 控制权限检查 -->  
+    </com-config>  
+    <!-- 系统上传文件配置 -->  
+    <upload-config> 
+      <upload name="images" path="/upload/images/" type="gif,jpg,jpeg,bmp,png" max="-1"/>  
+      <upload name="flash" path="/upload/flash/" type="swf" max="-1"/>  
+      <upload name="media" path="/upload/media/" type="avi,mpeg,mp3,rm,rmvb,wma,wmv,mp4" max="-1"/>  
+      <upload name="video" path="/upload/media/" type="avi,mp4,wma,rmvb,rm,flash,3gp,flv,ogg" max="-1"/>  
+      <upload name="xls" path="/upload/xls/" type="xls,xlsx" max="-1"/>  
+      <upload name="doc" path="/upload/doc/" type="doc" max="-1"/>  
+      <upload name="voice" path="/upload/voice/" type="mp3,wma,wav,amr" max="-1"/>  
+      <upload name="qr" path="/upload/weixin/qr" type="png" max="-1"/>  
+      <upload name="thumb" path="/upload/thumb/" type="jpg" max="-1"/>  
+      <upload name="txt" path="/upload/file/" type="txt" max="-1"/>  
+      <upload name="ico" path="/upload/ico/" type="ico" max="-1"/>  
+      <upload name="avatar" path="/upload/avatar/" type="gif,jpg,jpeg,bmp,png" max="-1"/>  
+      <upload name="audio" path="/upload/avatar/" type="mp3,wav,mid" max="-1"/>  
+      <upload name="file" path="/upload/file/" type="pptx,ppt,zip,pdf,rar,doc,docx,xlsx,xls,gif,jpg,jpeg,bmp,png,avi,mpeg,mp3,mp4,rm,rmvb,wma,wmv,swf,txt,apk" max="-1"/>  
+      <upload name="ppts" path="/upload/videoppt/" type="pptx,ppt,pdf" max="-1"/>  
+      <upload name="wxthumb" path="/upload/weixin/thumb/" type="jpg,png" max="60"/>
+      <upload name="bak" path="/upload/bak/" type="bak" max="-1"/> 
+    </upload-config>  
+    <!--系统静态化页面配置,state为0时直接调用静态页面，为1时更新静态页面,tables为相关连的表 -->  
+    <static-config> 
+    </static-config>  
+    <!--系统中使用的其它配置 -->  
+  </frame-setting>  
+</zm-web>

@@ -1,0 +1,1573 @@
+#macro(laypage)
+#if($!pageCount && $!pageCount>1)
+<div id="globalpl" style="text-align: right;padding-right: 10px;"></div>
+<input type="hidden" name="curPage" value="$!curPage" />
+<input type="hidden" name="pageSize" value="$!pageSize" />
+<script type="text/javascript">
+layui.use('laypage', function(){
+  var laypage = layui.laypage;
+  //执行一个laypage实例
+  laypage.render({
+    elem: 'globalpl' //注意，这里的 test1 是 ID，不用加 # 号
+    ,count: $!{rowCount} //数据总数，从服务端得到
+    ,limit:$!pageSize
+    ,limits:[10, 20, 30, 40, 50]
+    ,curr:$!curPage
+    ,groups:3
+    ,layout: ['count', 'prev', 'page', 'next', 'limit', 'skip']
+    ,jump: function(obj, first){
+    	//obj包含了当前分页的所有参数，比如：
+	    //首次不执行
+	    if(!first){
+	      document.form1.curPage.value=obj.curr;
+	      document.form1.pageSize.value=obj.limit;
+	   	  $("form[name='form1']").submit();
+	    }
+	 }
+  });
+});
+</script>
+#else
+<input type="hidden" name="curPage" value="$!curPage" />
+<input type="hidden" name="pageSize" value="$!pageSize" />
+#end
+#end
+
+
+
+#macro(laypagesimple)
+#if($!pageCount>1)
+<style type="text/css">
+.layui-laypage a {
+    text-decoration: none !important;
+}
+</style>
+<div id="globalpl" style="text-align: right;padding-right: 10px;"></div>
+<input type="hidden" name="curPage" value="$!curPage" />
+<input type="hidden" name="pageSize" value="$!pageSize" />
+<script type="text/javascript">
+layui.use('laypage', function(){
+  var laypage = layui.laypage;
+  //执行一个laypage实例
+  laypage.render({
+    elem: 'globalpl' //注意，这里的 test1 是 ID，不用加 # 号
+    ,count: $!{rowCount} //数据总数，从服务端得到
+    ,limit:$!pageSize
+    ,limits:[10, 20, 30, 40, 50]
+    ,curr:$!curPage
+    ,groups:3
+    ,jump: function(obj, first){
+    	//obj包含了当前分页的所有参数，比如：
+	    //首次不执行
+	    if(!first){
+	      document.form1.curPage.value=obj.curr;
+	      document.form1.pageSize.value=obj.limit;
+	   	  $("form[name='form1']").submit();
+	    }
+	 }
+  });
+});
+</script>
+#else
+<input type="hidden" name="curPage" value="$!curPage" />
+<input type="hidden" name="pageSize" value="$!pageSize" />
+#end
+#end
+
+
+<!-- 结束 -->
+<!-- 头部信息开始 -->
+#macro (topheadEl)
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta charset="utf-8">
+	<title>#if($!headTitle)$!headTitle #else $!globals_sys_name #end</title>
+ 	<meta name="renderer" content="webkit">
+ 	<meta name="globals_sys_basename"  data-val="$!globals_sys_basename" /> 
+ 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+ 	<link rel="shortcut icon" #if($!addressico&&$!addressico!="")  href="$!globals_sys_basename$!addressico" #else href="$!globals_sys_basename/common/favicon.ico" #end type="image/x-icon" />
+	<meta name="author" content="Amshren" /> 
+	<meta name="description" content="$!sitediscript" /> 
+	<meta name="keywords" content="$!sitekeyword" /> 
+	#if($!redirectURL)
+	<meta http-equiv="refresh" content="#if($redirectTime)$!redirectTime #else 0.1 #end;url=$!globals_sys_basename$!redirectURL">
+	#end
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  	<link rel="stylesheet" href="$!globals_sys_basename/plugins/layui/css/layui.css" media="all">
+  	<link rel="stylesheet" href="$!globals_sys_basename/private/base/system/layuiadmin/style/admin.css" media="all">
+  	<script type="text/javascript">
+		var sys_rootpath ="$!globals_sys_basename";
+	</script>
+	<script type="text/javascript" src="$!globals_sys_basename/common/js/frame.js"  charset="utf-8"></script>
+	<script src="$!globals_sys_basename/plugins/layui/layui.js"></script>
+	<link rel="shortcut icon" #if($!addressico&&$!addressico!="")  href="$!globals_sys_basename$!addressico" #else href="$!globals_sys_basename/common/favicon.ico" #end type="image/x-icon" />
+	<script type="text/javascript">
+		$(function(){
+			changAutoWDom();
+			$(window).resize(function(){
+				changAutoWDom();
+			});		
+		});
+		function resetPageSize(targetForm,currentPage){
+		    if(!targetForm){
+		    	targetForm = form1;
+		    }
+		    if(!currentPage){
+		    	currentPage = 1;
+		    }
+			targetForm.curPage.value = currentPage;
+		}
+		function changAutoWDom(){
+			var allAutoDoms = $(".autowdom");
+			var wid=$(allAutoDoms[0]).width();
+			var mybroths = $(allAutoDoms[0]).siblings("td");
+			allAutoDoms.css("max-width",wid - mybroths.length*20);
+		}
+		function confirmDeleFile(obj){
+			layer.confirm('请选择您的操作！', {
+			  btn: ['删除','取消'] //按钮
+			}, function(_indexno){
+			  	$(obj).remove();
+			  	layer.close(_indexno);
+			}, function(){
+				
+			});
+		}
+		var layer,GLayer,GElement,GForm,GLaydate,Gwindow,showDefMsg,GUpload,GLayedit ;
+		layui.use(['layer','element','form','upload',"layedit",'laydate'], function(){
+			$("input[type='text']").addClass("layui-input");
+			$("input[type='password']").addClass("layui-input");
+			$("textarea").addClass("layui-textarea").css("resize","none");
+			layer = layui.layer;
+			GLayer = layui.layer;
+			GElement = layui.element;
+			GUpload = layui.upload;
+			GForm = layui.form;
+			GLayedit = layui.layedit;
+			GLaydate = layui.laydate;
+			if($("form").length>0){
+				$("form").addClass("layui-form");
+			}
+			setTimeout(function(){
+				initLayuiElement();
+				innitUploadPlugin();
+				initTimePlugin();
+				initSelectAll();
+				initChangeEvent();
+				initLayeditPlugin();
+				if(typeof window["layuiReady"] == "function"){
+					window["layuiReady"]();
+				}
+			},500);
+			//各种基于事件的操作，下面会有进一步介绍
+			getLayerMode();
+			var pagefooters = $(".page-footer");
+			if(pagefooters.length>0){
+				for(var i=0;i<pagefooters.length;i++){
+					var pf =$(pagefooters[i]);
+					var pfp = pf.parent()[0];
+					$(pfp).css("padding-bottom","46px");
+				}
+			}
+			if(!gethaveit(showDefMsg)&&showDefMsg!=false){
+				#if($msg)
+				CurrentLayer.msg("$!msg");
+				#end
+				#if($errmsg)
+				showErrMsg("系统提示","$!errmsg");
+				#end
+				#if($okmsg)
+				showOkMsg("系统提示","$!okmsg");
+				#end
+			}
+			#if($refreshParent)
+				setTimeout(function(){
+	    			var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+					parent.layer.close(index);
+				#if($!useTop==true||$!useTop=="true")
+					var form1 = TopWindow.Gwindow.$("form[name='form1']");
+					form1[0]?form1.submit():TopWindow.Gwindow.location.reload();
+				#else
+					var form1 = parent.$("form[name='form1']");
+					form1[0]?form1.submit():parent.location.reload();
+				#end
+	    		},2000);
+			#end
+			readyForCheck();
+			if(window["readyLayui"]&&typeof window["readyLayui"] == "function"){
+				readyLayui();
+			}
+		});
+		var msgConf = {
+		    icon: 2
+		    ,shift: 6
+		}
+		//上传附件类代码说明
+		var uploadoptions ={
+		  url: '$!globals_sys_basename/private/sys/ajax.zm?doAction=uploadFiles&upfiletype=_uft'
+		  ,before: function(input){
+		    //返回的参数item，即为当前的input DOM对象
+		    var realAction = this.url;
+		    realAction = this.url.replace("_uft",$(input).attr("lay-type"));
+		    if($(input).attr("lay-modular")){
+		    	realAction = realAction+"&ReferModular="+$(input).attr("lay-modular");
+		    }
+		    $(input).parent().attr("action",realAction);
+		  }
+		  ,success: function(res,input){
+		    var backFun  = $(input).attr("lay-back");
+		    if(TopWindow!=undefined){
+				TopWindow.hideLoading();
+			}else{
+				hideLoading();
+			}
+		    if(backFun){
+		    	window[backFun](res);
+		    }
+		  }
+		}
+		var lastFilePath = "";
+		var lastFileName = "";
+		function showFileMsg(backMsg){
+			if(backMsg.length>0){
+				var msg = backMsg[0];
+				if(msg.isok==true){
+					lastFilePath = msg.path;
+					lastFileName = msg.oldname;
+				}else{
+					layer.msg(msg.msg+"请检查以下参数：lay-type");	
+				}
+			}else{
+				layer.msg('不支持该图片格式', msgConf);
+			}
+		}
+		
+		function initSelectAll(){
+			GForm.on('checkbox(selectAll)', function(data){
+				var _name = $(data.elem).attr("target-name");
+			  	var nextCheckBoxs=$(data.elem).parent().parent().parent().next().find('input[type=checkbox][name='+_name+']:not([disabled])');
+	            var isChecked=false;
+	            if(data.elem.checked){
+	                isChecked=true;
+	            }
+	            nextCheckBoxs.prop('checked',isChecked);
+	            GForm.render('checkbox');
+			});
+		}
+		
+		
+		// 文件上传类代码结束
+		function initLayuiElement(){
+			GForm.render();
+			GElement.init();
+			GElement.render();
+		};
+		
+		
+		function innitUploadPlugin(){
+			var uploadbtns = $(".upload-files-btn");
+			if(uploadbtns.length>0){
+				for(var i=0;i<uploadbtns.length;i++){
+					var _updom = $(uploadbtns[i]);
+					if(!_updom.attr("layui-loaded")){
+		  				_updom.attr("layui-loaded",true);
+						var remodule = _updom.attr("remodule");
+						var filetype = _updom.attr("filetype");
+						GUpload.render({
+						  elem: '#'+_updom.attr("id"),
+						  accept: filetype, //普通文件
+						  multiple:true,
+						  before:function(){
+						  	showLoading();
+						  },
+						  done: function(res, index, upload){
+							var  f = res[0]; 
+							 //获取当前触发上传的元素，一般用于 elem 绑定 class 的情况，注意此乃 layui 2.1.0 新增
+							var item = this.item;
+							var btnJQDom = $(item);
+							var filesshowul = btnJQDom.parent().find(".upload_files_show");
+							var fileli = $("<li></li>");
+							fileli.append(f.oldname);
+							var hideinput = $("<input name='"+btnJQDom.attr("subnanme")+"' type='hidden'/>");
+							hideinput.val(f.indexno);
+							fileli.append(hideinput);
+							fileli.bind("click",function(){
+								confirmDeleFile(this);
+							});
+							filesshowul.append(fileli);
+							hideLoading();
+						  },
+						  error:function(){
+						  	hideLoading();
+						  },
+						  url:"$!globals_sys_basename/private/sys/ajax.zm?doAction=uploadFiles&remodule="+remodule+"&upfiletype="+filetype
+					  });
+				  }
+				}
+			}
+			var uploadDoms = $(".bind_upload");
+		  	for(var i=0;i<uploadDoms.length;i++){
+		  		var _dom = $(uploadDoms[i]);
+		  		var _pdom = _dom.parent();
+		  		var remodule = _dom.attr("remodule");
+				var subnanme = _dom.attr("subnanme");
+				var filetype = _dom.attr("filetype");
+				var defval = _dom.attr("defval");
+				if(!gethaveit(defval)){
+					defval = "";
+				}
+				var nextObj = $("input[name='"+subnanme+"']");
+				if(nextObj.length<=0){
+					nextObj = $("<input type='hidden'/>");
+					nextObj.attr("id",subnanme);
+					nextObj.attr("name",subnanme);
+					nextObj.val(defval);
+					_pdom.append(nextObj);
+				}else{
+					nextObj.attr("id",subnanme);
+					nextObj.val(defval);
+				}
+				var preObj = $("#"+subnanme+"_show");
+				if(filetype=="images"||filetype=="wxthumb"){
+					var imgsrc = "$!globals_sys_basename/common/images/photo_non.jpg";
+					if(nextObj.length==1&&nextObj.val()!=""){
+						imgsrc = nextObj.val();
+					}
+					if(preObj.length<=0){
+						preObj = $("<img />");
+						preObj.attr("onerror","$!globals_sys_basename/common/images/photo_non.jpg");
+						preObj.attr("src",imgsrc);
+						preObj.attr("id",subnanme+"_show");
+						_pdom.prepend(preObj);
+					}
+				}else{
+					var divmsg = "请选择上传文件☛";
+					if(preObj.length<=0){
+						preObj = $("<div></div>");
+						preObj.attr("id",subnanme+"_show");
+						preObj.html(divmsg);
+						_pdom.prepend(preObj);
+					}
+				}
+				
+		  		if(!_dom.attr("layui-loaded")){
+		  		  _dom.attr("layui-loaded",true);
+	  			  GUpload.render({
+					  elem: '#'+_dom.attr("id"),
+					  accept:filetype,
+					  before:function(){
+					  	showLoading();
+					  },
+					  done: function(res, index, upload){
+						  	var  f = res[0];
+						  	if(f.isok){
+						  		//获取当前触发上传的元素，一般用于 elem 绑定 class 的情况，注意此乃 layui 2.1.0 新增
+							    var item = this.item;
+							    setTimeout(function(){
+							    	var showdom = $(item).attr("id").replace("_btn","_show");
+							    	var valdom = $(item).attr("id").replace("_btn","");
+							    	var indexdom = $(item).attr("id").replace("_btn","_indexno");
+							    	var filetype = $(item).attr("filetype");
+							    	if(filetype=="images"||filetype=="wxthumb"){
+							    		$("#"+showdom).attr("src","$!globals_sys_basename"+f.path);
+							    	}else{
+							    		$("#"+showdom).html(f.oldname);
+							    		$("#"+showdom).unbind("click");
+							    		$("#"+showdom).bind("click",function(){
+							    			var _thisObj =  this;
+								    		layer.confirm('请选择您的操作！', {
+											  btn: ['删除','取消'] //按钮
+											}, function(_indexno){
+											  	$(_thisObj).html("请选择上传文件☛");
+											  	$("#"+valdom).val("");
+											  	layer.close(_indexno);
+											}, function(){
+												
+											});
+										});
+							    	}
+							    	$("#"+indexdom).val(f.indexno);
+							    	$("#"+valdom).val("$!globals_sys_basename"+f.path);
+							    	hideLoading();
+							    },1000);
+						  	}else{
+						  		hideLoading();
+						  		layer.alert(f.msg);
+						  	}
+					  	},error:function(){
+					  		hideLoading();
+					  	},
+					  	url:"$!globals_sys_basename/private/sys/ajax.zm?doAction=uploadFiles&remodule="+remodule+"&upfiletype="+filetype
+				  	});
+		  		}
+		  	}
+		}
+		
+		function initChangeEvent(){
+			GForm.on('switch()', function(data){
+				var changeFun = $(data.elem).attr("changeFun");
+				if(window[changeFun]&&typeof(window[changeFun]) ==="function" ){
+					window[changeFun](this,data);
+				}
+			});
+			GForm.on('radio()', function (data) {
+	            var changeFun = $(data.elem).attr("changeFun");
+				if(window[changeFun]&&typeof(window[changeFun]) ==="function" ){
+					window[changeFun](this,data);
+				}
+	        });
+	        
+	        GForm.on('checkbox()', function(data){
+				var changeFun = $(data.elem).attr("changeFun");
+				if(window[changeFun]&&typeof(window[changeFun]) ==="function" ){
+					window[changeFun](this,data);
+				}
+			});
+			
+			GForm.on('select()', function(data){
+				var changeFun = $(data.elem).attr("changeFun");
+				if(window[changeFun]&&typeof(window[changeFun]) ==="function" ){
+					window[changeFun](this,data);
+				}
+			});
+			GElement.on('tab()', function(elem){
+				var changeFun = $(this).attr("changeFun");
+				if(window[changeFun]&&typeof(window[changeFun]) ==="function" ){
+					window[changeFun](this,elem);
+				}
+			});
+		}
+		
+		function initLayeditPlugin(){
+			var editDoms = $(".ledom");
+			if(editDoms.length>0){
+				for(var i=0;i<editDoms.length;i++){
+					var dom = $(editDoms[i]);
+					var editedindexno = dom.attr("editedindexno");
+					if(!editedindexno){
+						var _id = dom.attr("id");
+						if(!_id){
+							_id = dom.attr("id","_tid_"+(new Date()).getTime());
+						}
+						editedindexno = GLayedit.build(_id,{
+							height:dom.height()
+						});
+						dom.attr("editedindexno",editedindexno);
+					}
+				}
+			
+			}
+		};
+		
+		function synLayedit(obj){
+			var leindexno = $(obj).attr("editedindexno");
+			GLayedit.sync(leindexno);
+		}
+		
+		
+		function getLayeditText(obj){
+			var leindexno = $(obj).attr("editedindexno");
+			return GLayedit.getText(leindexno);
+		}
+		
+		function getLayeditContent(obj){
+			var leindexno = $(obj).attr("editedindexno");
+			return GLayedit.getContent(leindexno);
+		}
+		
+		
+		function initTimePlugin(){
+			var dateDoms = $(".Wdate");
+			if(dateDoms.length>0){
+				GLaydate = layui.laydate;
+				for(var i=0;i<dateDoms.length;i++){
+					var dom = $(dateDoms[i]);
+					var confStr = dom.data("conf");
+					dom.attr("readonly","readonly");
+					var config = {};
+					if(gethaveit(confStr)){
+						if(typeof(confStr)==="string"){
+							config = eval('(' + confStr + ')');
+						}else if(typeof(confStr)==="object"){
+							config = confStr;
+						}
+					}
+					var dateType = $(dateDoms[i]).attr("dateType");
+					if(!gethaveit(dateType)){
+						dateType = "date";
+					}
+					var Dformat = $(dateDoms[i]).attr("dateFmt");
+					if(!gethaveit(Dformat)){
+						Dformat = "yyyy-MM-dd";
+					}
+					var _id = dom.attr("id");
+					if(!gethaveit(_id)){
+						_id = "laydate_noid_"+i;
+						dom.attr("id",_id);
+					}
+					config["elem"] = "#"+_id;
+					config["type"] = dateType;
+					config["format"] = Dformat;
+					GLaydate.render(config);
+				}
+			}
+		}
+		
+		
+		function LayerHideBtns(index,_width,_height){
+			var outDiv = $('#layui-layer'+ index);
+			var _iframe = outDiv.find('iframe');
+			var btnDiv = $('#layui-layer'+ index).find(".layui-layer-btn");
+			var _Height = outDiv.height();
+			var _Width = outDiv.width();
+			$(btnDiv).hide();
+			var closeBtn = $('#layui-layer'+ index).find(".layui-layer-setwin");
+			$(closeBtn).hide();
+			var titleDiv = $('#layui-layer'+ index).find(".layui-layer-title");
+			$(titleDiv).html("系统提示");
+			if(gethaveit(_width)&&gethaveit(_height)){
+				outDiv.css({height: _height,width:_width});
+				_iframe.css({height: _height,width:_width});
+				var _top = outDiv.css("top").replace("px","");
+				var _left = outDiv.css("left").replace("px","");
+				var diffw = _Width - _width;
+				var diffh = _Height - _height;
+				_left = _left*1 + diffw/2;
+				_top = _top*1 + diffh/2;
+				outDiv.css("top",_top+"px");
+				outDiv.css("left",_left+"px");
+			}else{
+				var oldHeight = $(_iframe).height();
+				var btnDiv = $(btnDiv).height();
+				var newHeight = oldHeight+btnDiv;
+				$(_iframe).css({height: newHeight});
+			}
+		}
+		
+		function LayerDailogChangeBtn(index,_width,_height,title,btns){
+			var outDiv = $('#layui-layer'+ index);
+			var _iframe = outDiv.find('iframe');
+			var btnDiv = $('#layui-layer'+ index).find(".layui-layer-btn");
+			var _Height = outDiv.height();
+			var _Width = outDiv.width();
+			var closeBtn = $('#layui-layer'+ index).find(".layui-layer-setwin");
+			$(closeBtn).hide();
+			var titleDiv = $('#layui-layer'+ index).find(".layui-layer-title");
+			if(!title){
+				title = "系统提示";
+			}
+			if(!btns){
+				$(btnDiv).hide();
+			}else{
+				$(btnDiv).empty();
+				for(var i=0;i<btns.length;i++){
+					var btn = btns[i];
+					var btndom = $("<a class='layui-layer-btn"+i+"'>"+btn.name+"</a>");
+					if(btn.clickfun){
+						btndom.on("click",btn.clickfun);
+					}
+					$(btnDiv).append(btndom);
+				}
+				if(closeBtn.length>0){
+					var newclosebtndom = $("<a class='layui-layer-btn"+btns.length+"'>关闭</a>");
+					newclosebtndom.on("click",function(){
+						closeBtn.find(".layui-layer-close").click();
+					});
+					$(btnDiv).append(newclosebtndom);
+				}
+			}
+			$(titleDiv).html(title);
+			if(gethaveit(_width)&&gethaveit(_height)){
+				outDiv.css({height: _height,width:_width});
+				_iframe.css({height: btns?(_height-96):_height,width:_width});
+				var _top = outDiv.css("top").replace("px","");
+				var _left = outDiv.css("left").replace("px","");
+				var diffw = _Width - _width;
+				var diffh = _Height - _height;
+				_left = _left*1 + diffw/2;
+				_top = _top*1 + diffh/2;
+				outDiv.css("top",_top+"px");
+				outDiv.css("left",_left+"px");
+			}else{
+				var oldHeight = $(_iframe).height();
+				var btnDiv = $(btnDiv).height();
+				var newHeight = oldHeight+btnDiv;
+				$(_iframe).css({height: newHeight});
+			}
+		}
+		
+		function createUploadFileDom(remodule,subnanme,filetype,filepath,fileindexno,addHtml){
+			var _btn = $("<button class='layui-btn layui-btn-icon bind_upload' type='button'></button>");
+			_btn.attr("id",subnanme+"_btn");
+			_btn.attr("subnanme",subnanme);
+			_btn.attr("filetype",filetype);
+			_btn.attr("remodule",remodule);
+			_btn.attr("defval",filepath);
+			_btn.css("margin-left","100px");
+			var _i = $("<i class='icon-cloud-upload  icon-out'></i>");
+			_btn.append(_i);
+			_btn.append("<span>上传文件</span>");
+			if(fileindexno!=undefined&&fileindexno!=null){
+				var indexnoInput = $("<input type='hidden' name='"+subnanme+"_indexno' value='"+fileindexno+"' />")
+				_btn.append(indexnoInput);
+			}
+			if(filepath!=undefined&&filepath!=null){
+				var pathInput = $("<input type='hidden' name='"+subnanme+"' value='"+filepath+"' />")
+				_btn.append(pathInput);
+			}
+			return _btn;
+		}
+		
+		function noticeMsg(msg,okfun){
+			var nindenx = TopLayer.open({
+				 type: 1
+				,offset: 'rb'
+				,id: 'noticedailog' //防止重复弹出
+				,content: msg.content
+				,btn: '查看'
+				,anim: 2
+				,title: false //不显示标题栏
+		        ,closeBtn: false
+		        ,area: ['320px', '200px']
+				,btnAlign: 'rb' //按钮居中
+				,shade: 0 //不显示遮罩
+				,yes: function(){
+				  TopLayer.close(nindenx);
+				  if(okfun){
+				  	okfun(msg);
+				  }
+				}
+			});
+		
+		}
+	</script>
+#end
+<!-- 头部信息结束 -->
+#macro(uploadFiles $remodule $subnanme $filetype $files)
+<div class="upload_files_out">
+	<ul class="upload_files_show">
+		#if($!files)
+		#foreach($obj in $!files)
+		<li onclick="confirmDeleFile(this)" >$!obj.oldname<input name="$!subnanme" type="hidden" value="$!obj.indexno"></li>
+		#end
+		#end
+	</ul>
+	<button class="layui-btn layui-btn-sm layui-btn-icon upload-files-btn" id="upload-files-btn-$!subnanme" type="button" remodule="$!remodule" subnanme="$!subnanme" filetype="$!filetype">
+       <i class="layui-icon-tianjia2 align-top bigger-125"></i>添加附件
+     </button>
+</div>
+#end
+
+#macro(uploadFile $remodule $subnanme $filetype $filepath $fileindexno $addHtml $btnName)
+	#if(!$btnName)
+	#set ($btnName = "上传附件")
+	#end
+	<button class="layui-btn layui-btn-icon bind_upload" type="button" id="$!{subnanme}_btn" subnanme="$!subnanme" filetype="$!filetype" remodule="$!remodule" defval="$!filepath" style="margin-left:100px">
+		<i class="icon-cloud-upload  icon-out"></i>$!btnName#if($fileindexno)<input type="hidden" name="$!{subnanme}_indexno" id="$!{subnanme}_indexno" value="$!fileindexno" />#end 
+	</button>#if($filepath)<input type="hidden" name="$!{subnanme}" value="$!filepath" />#end $!addHtml
+#end
+
+#macro(gettreecode $treecode)
+#set($len = $!treecode.length()/4)
+#if($len == 1)┠  #elseif($len == 2)&nbsp;&nbsp;┠  #elseif($len == 3) &nbsp;&nbsp;&nbsp;&nbsp;┠ #elseif($len == 4) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;┠ #elseif($len == 5) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;┠ #else  &nbsp;&nbsp;┠ #end 
+#end
+#macro(gettreemap $treecode)
+    #set($len = $!treecode.length()/4)
+      #if($len == 1)
+      <img src='$!globals_sys_basename/common/images/menu/mfc.gif' border=0><img src='$!globals_sys_basename/common/images/menu/node.png' border=0>
+      #elseif($len == 2)
+      <img src='$!globals_sys_basename/common/images/menu/line.png' border=0><img src='$!globals_sys_basename/common/images/menu/mfc.gif' border=0><img src='$!globals_sys_basename/common/images/menu/node.png' border=0>
+      #elseif($len == 3)
+      <img src='$!globals_sys_basename/common/images/menu/line.png' border=0><img src='$!globals_sys_basename/common/images/menu/line.png' border=0><img src='$!globals_sys_basename/common/images/menu/mfc.gif' border=0><img src='$!globals_sys_basename/common/images/menu/node.png' border=0>
+      #elseif($len == 4)
+      <img src='$!globals_sys_basename/common/images/menu/line.png' border=0><img src='$!globals_sys_basename/common/images/menu/line.png' border=0><img src='$!globals_sys_basename/common/images/menu/line.png' border=0><img src='$!globals_sys_basename/common/images/menu/mfc.gif' border=0><img src='$!globals_sys_basename/common/images/menu/node.png' border=0>
+      #elseif($len == 5)
+      <img src='$!globals_sys_basename/common/images/menu/line.png' border=0><img src='$!globals_sys_basename/common/images/menu/line.png' border=0><img src='$!globals_sys_basename/common/images/menu/line.png' border=0><img src='$!globals_sys_basename/common/images/menu/line.png' border=0><img src='$!globals_sys_basename/common/images/menu/mfc.gif' border=0><img src='/com/menu/node.png' border=0>
+      #else
+      <img src='$!globals_sys_basename/common/images/menu/mfc.gif' border=0><img src='$!globals_sys_basename/common/images/menu/node.png' border=0>
+      #end
+#end
+#macro(weixhead $mustOauth $appid $wxcode)
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<meta name="width-full" content="yes" />
+<script type="text/javascript">
+	var sys_rootpath ="$!globals_sys_basename";
+	var osspath = "https://framefile.oss-cn-hangzhou.aliyuncs.com/";
+</script>
+<script type="text/javascript" src="https://framefile.oss-cn-hangzhou.aliyuncs.com/zmui/js/zmuiframe.js"  charset="utf-8"></script>
+<meta name="x5-fullscreen" content="true" />
+<meta name="description" content="$!description" />
+<script type="text/javascript">
+	var  developType = false;
+	var logined = #if($!binded) $!binded #else false #end;
+	var sys_rootpath ="$!globals_sys_basename";
+	$(function (){
+		var useragent = navigator.userAgent;
+		if (useragent.match(/MicroMessenger/i) != 'MicroMessenger') {
+		    // 这里警告框会阻塞当前页面继续加载  
+		   	zmui.alert("已禁止本次访问：您必须使用微信内置浏览器访问本页面！");
+		    // 以下代码是用javascript强行关闭当前页面  
+		    var opened = window.open('$!globals_sys_basename/MFrame/weix/base/WXBrowserOnly.zm', '_self');
+		    opened.opener = null;
+		    opened.close();
+		}else{
+			#if($!mustOauth && $!mustOauth == true && !$!WXUser)
+				var rurl = document.location.protocol+"//"+document.location.host+"/private/weix/base.zm?zmurlparmas=";
+				var zmurlparmas = {};
+				zmurlparmas["doAction"]="toAppPage";
+				zmurlparmas["topage"]=window.location.href;
+				rurl = encodeURI(rurl+(EncryptBase64(JSON.stringify(zmurlparmas))));
+				window.location.href = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=$!appid&redirect_uri="+rurl+"&response_type=code&scope=snsapi_userinfo&state=$!wxcode#wechat_"
+			#end
+		}
+	})
+</script>
+#end
+
+#macro(getRealSrc $_src)
+#if($_src.startsWith("http:")||$_src.startsWith("https:")||$_src.startsWith("$!globals_sys_basename"))
+$_src
+#else
+$!globals_sys_basename$_src
+#end
+#end
+#macro(WebIM)
+<script src="$!globals_sys_basename/plugins/wssocket/tio/tiows.js" type="text/javascript"></script>
+<script src="$!globals_sys_basename/plugins/wssocket/imHandler.js" type="text/javascript"></script>
+<script src="$!globals_sys_basename/plugins/layui/lay/modules/layimsocket.js" type="text/javascript"></script>
+<script type="text/javascript">
+var globaljQuery,globalLayIM,globalIMConfig;
+var globals_sys_basename = "$!globals_sys_basename";
+layui.use('layim', function(layim){
+  globalLayIM = layim;
+  setIMClient(globalLayIM);
+  globaljQuery = layui.jquery
+  /*
+  globalLayIM.chat({
+    name: '在线客服-小苍'
+    ,type: 'kefu'
+    ,avatar: 'http://tva3.sinaimg.cn/crop.0.0.180.180.180/7f5f6861jw1e8qgp5bmzyj2050050aa8.jpg'
+    ,id: -1
+  });
+  globalLayIM.chat({
+    name: '在线客服-心心'
+    ,type: 'kefu'
+    ,avatar: 'http://tva1.sinaimg.cn/crop.219.144.555.555.180/0068iARejw8esk724mra6j30rs0rstap.jpg'
+    ,id: -2
+  });
+  globalLayIM.setChatMin();*/
+
+  //监听在线状态的切换事件
+  globalLayIM.on('online', function(state){
+   		changeIMState(layui.layim.cache().mine.id, state, "friend")
+  });
+  
+  //监听签名修改
+  globalLayIM.on('sign', function(value){
+    	changeSign(value);
+  });
+
+  //监听登录事件
+  globalLayIM.on('login', function(data,loginindex){
+  	var loginname = data.loginname;
+  	var sessionid = data.sessionid;
+  	configdata["logined"] = layui.layim.cache().base.logined;
+  	globalLayIM.config(configdata);
+  	if(!socketOpen){
+  		layer.msg("请检查下面注释")
+  		//creatSC("$!socPath", "$!serverport", "$!ctpath", sessionid,loginname);
+  	}
+  	layer.close(loginindex);
+  });
+
+  //监听退出群组
+  globalLayIM.on('exitGroup', function(groupid,mineid){
+  		exitGroup(groupid,mineid);
+  });
+  
+  //监听退出群组
+  globalLayIM.on('delFriend', function(frenid,mineid){
+  		delFriend(frenid,mineid);
+  });
+  
+  
+  //监听修改好友群组
+  globalLayIM.on('changGroup', function(frenid,mineid){
+  		changGroup(frenid,mineid);
+  });
+  
+  
+  //监听自定义工具栏点击，以添加代码为例
+  globalLayIM.on('tool(code)', function(insert){
+    layer.prompt({
+      title: '插入代码'
+      ,formType: 2
+      ,shade: 0
+    }, function(text, index){
+      layer.close(index);
+      insert('[pre class=layui-code]' + text + '[/pre]'); //将内容插入到编辑器
+    });
+  });
+  
+
+  //监听发送消息
+  globalLayIM.on('sendMessage', function(data){
+    AnalysisIMData(data);
+  });
+
+  //监听查看群员
+  globalLayIM.on('members', function(data){
+   	console.log(data);
+  });
+  
+  //监听聊天窗口的切换
+  globalLayIM.on('chatChange', function(res){
+    var type = res.data.type;
+    if(type === 'friend'){
+      //模拟标注好友状态
+      //layim.setChatStatus('<span style="color:#FF5722;">在线</span>');
+    } else if(type === 'group'){
+      //模拟系统消息
+    }
+  });
+  //监听layim建立就绪
+  globalLayIM.on('ready', function(res){
+  		var data = res.base.serverData;
+		if(data.noReadMsg>0){
+			globalLayIM.msgbox(data.noReadMsg); //模拟消息盒子有新消息，实际使用时，一般是动态获得
+		}
+		if(data.userid!=""){
+			creatSC(data.socPath, data.serverport,data.ctpath, data.sessionid,data.userid);
+			layui.layim.cache().base.logined = true;
+		}
+	});
+});
+
+function changeSign(val){
+	var postdata ={"doAction":"changeSignature","signature":val};
+	jQuery.post('$!globals_sys_basename/modular/chat.zm',postdata,function(data){
+		data = JSON.parse(data);
+		if(data.isok){
+			layer.msg("修改签名成功！");
+		}else{
+			layer.msg(data.msg);
+		}
+		if(data.sing){
+			$(".layui-layim-remark").html(data.signature);
+		}
+	});
+}
+
+function startWebIM(){
+	var postdata ={"doAction":"getWebIMParams","randNum":Math.random()};
+	jQuery.post('$!globals_sys_basename/modular/chat.zm',postdata,function(data){
+		data = JSON.parse(data);
+		if(data.code==0){
+			//基础配置
+			var configdata={
+			  //初始化接口
+			  init: {
+			    url: '$!globals_sys_basename/modular/chat.zm?doAction=getMsgList&sessionid='+data.sessionid
+			    ,data:{}
+			  }
+			
+			  //查看群员接口
+			  ,members: {
+			    url: '$!globals_sys_basename/modular/chat.zm?doAction=getGroupMembers&sessionid='+data.sessionid
+			    ,data: {}
+			  }
+			  
+			  //上传图片接口
+			  ,uploadImage: {
+			    url: '$!globals_sys_basename/modular/chat.zm?doAction=uploadFiles&remodule=CHAT&reindexno='+data.userid+'&upfiletype=images' //（返回的数据格式见下文）
+			    ,type: 'post' //默认post
+			  } 
+			  
+			  //上传文件接口
+			  ,uploadFile: {
+			    url: '$!globals_sys_basename/modular/chat.zm?doAction=uploadFiles&remodule=CHAT&reindexno='+data.userid+'&upfiletype=other' //（返回的数据格式见下文）
+			    ,type: 'post' //默认post
+			  }
+			  
+			  ,isAudio: true //开启聊天工具栏音频
+			  ,isVideo: true //开启聊天工具栏视频
+			  
+			  //扩展工具栏
+			  ,tool: [{
+			    alias: 'code'
+			    ,title: '代码'
+			    ,icon: '&#xe64e;'
+			  }]
+			  //,brief: true //是否简约模式（若开启则不显示主面板）
+			  ,copyright:false  //关于
+			  ,setting:true		//设置
+			  ,title: '在线交流' //自定义主面板最小化时的标题
+			  //,right: '100px' //主面板相对浏览器右侧距离
+			  //,minRight: '90px' //聊天面板最小化时相对浏览器右侧距离
+			  ,initSkin: '1.jpg' //1-5 设置初始背景
+			  //,skin: ['aaa.jpg'] //新增皮肤
+			  ,isfriend: true //是否开启好友
+			  ,isgroup: true //是否开启群组
+			  //,min: true //是否始终最小化主面板，默认false
+			  ,notice: true //是否开启桌面消息提醒，默认false
+			  //,voice: false //声音提醒，默认开启，声音文件为：default.mp3
+			  ,msgbox: '$!globals_sys_basename/modular/chat.zm?doAction=toMsgBoxPage' //消息盒子页面地址，若不开启，剔除该项即可
+			  ,find: '$!globals_sys_basename/modular/chat.zm?doAction=toFindPage' //发现页面地址，若不开启，剔除该项即可
+			  ,chatLog: '$!globals_sys_basename/modular/chat.zm?doAction=toChatLogPage' //聊天记录页面地址，若不开启，剔除该项即可
+			  ,loginurl:'$!globals_sys_basename/modular/chat.zm' //登录状态
+			  ,globals_base_dir:"$!globals_sys_basename" //根目录
+			  ,logined:false //登录状态
+			  ,serverData:data
+			};
+			globalIMConfig = configdata;
+			globalLayIM.config(globalIMConfig);
+		}else{
+			layer.msg(data.msg);
+		}
+	});
+}
+</script>
+#end
+<!-- 标签 -->
+#macro(addLabels $remodule $inputname $separator $maxlenth $inputvalue $list)
+	#if(!$remodule) #set($remodule = '') #end
+	#if(!$inputname) #set($inputname = 'labels') #end
+	#if(!$separator) #set($separator = ',') #end
+	#if(!$maxlenth) #set($maxlenth = 5) #end
+	<div class="layui-inline" style="margin-bottom:0px;">
+	#if($list)
+		#foreach($label in $list)
+			<span class='layui-badge-rim layui-elip' style='max-width:70px;margin-left:2px;margin-top:5px;cursor:pointer;padding:4px;' data='/$!label' title='$!label' onclick=delthis(this) ><i class='layui-icon-close'></i>$!label</span>
+		#end
+	#end
+	</div>
+	<button class="layui-btn layui-btn-sm layui-btn-icon" type="button" onclick="addLabels(this,'$!remodule','$!separator','$!maxlenth')" style="float:right">
+       <i class="layui-icon-tianjia2 "></i>添加
+    </button>
+    <input type="hidden" name="$!inputname" value="$!inputvalue">
+    <script>
+    //添加资产标签
+	function addLabels(obj,remodule,separator,maxlength){
+		TopLayer.open({
+		  type: 2,
+		  title:'添加标签',
+		  area: ['500px', '400px'],
+		  fixed: false, //不固定
+		  maxmin: false,
+		  content: '$!globals_sys_basename/base/labels.zm?doAction=addlabels&remodule='+remodule,
+		  btn: ['确定','取消'],
+		  btn1:function(index,layero){
+		  	var iframeWin = TopWindow[layero.find('iframe')[0]['name']];
+			var _filds = "";
+			var flag = true;
+			_filds = eval("iframeWin.getBackData()");
+			$(obj).prev().find('span').each(function(){
+				if($(this).attr('data')==separator+_filds){
+					flag = false;
+				}
+			});
+			if(_filds!=""&&flag){
+			  jQuery.post(
+				"$!globals_sys_basename/base/labels.zm",
+				{
+				"doAction":"add",
+				"remodule":remodule,
+				"content":_filds
+				},
+				function(result){
+					var r = JSON.parse(result);
+					if(r.isok){
+						  var span = "<span class='layui-badge-rim layui-elip' style='max-width:70px;margin-left:2px;margin-top:5px;cursor:pointer;padding:4px' data='"+separator+_filds+"' title='"+_filds+"' onclick=delthis(this) ><i class='layui-icon-close'></i>"+_filds+"</span>";
+						  $(obj).prev().append(span);
+						  form1['$!inputname'].value==""?(form1['$!inputname'].value += _filds):(form1['$!inputname'].value += separator + _filds);
+						  TopLayer.close(index);
+						  if($(obj).prev().find('span').length >= maxlength){
+						  	$(obj).prop('disabled','disabled');
+						  	return;
+						  }
+						  layer.confirm('添加成功，是否继续添加？', {icon: 3, title:'提示'}, function(index){
+				  			layer.close(index);
+				  			addLabels(obj,remodule,separator,maxlength);
+				  		  });	
+					}else{
+						TopLayer.msg("添加失败！");
+					}
+		     	})
+		  	}else if(_filds==""){
+		  		TopLayer.msg("未设置标签！");
+		  	}else if(!flag){
+		  		TopLayer.msg("该标签已添加！");
+		  	}
+		  },
+		  btn2:function(index){
+		  	TopLayer.close(index);
+		  }
+		});
+	}
+	
+	function delthis(obj){
+		var value = "", contentdiv = $(obj).parent();
+		$(obj).remove();
+		contentdiv.find('span').each(function(){
+			value += $(this).attr('data');
+		});
+		form1['$!inputname'].value = value.substring(1,value.length)||value;
+		contentdiv.next().removeAttr("disabled");
+	}
+    </script>
+#end
+
+<!-- 表单拖拽 -->
+#macro(addDragForms $inputname $exlist $extralist)
+	<style>
+		.limitH{
+			height: 85px !important;
+			min-height:unset;
+			font-size: 14px;
+			resize:none;
+		}
+		.layui-input{
+			height:38px;
+		}
+		.layui-tab-item{
+			height:300px;
+			padding:5px;
+			overflow: auto;
+		}
+		.div-right{
+			float:right;
+		}
+		.dbdiv{
+			width:93%;
+			height:30px;
+			padding:3px;
+			border: 2px solid #F2F2F2;
+			text-align: left;
+			vertical-align: middle;
+			border-radius:4px;
+			background: #FBFBFB;
+			-moz-user-select: -moz-none;
+			-khtml-user-select: none;
+	   		-webkit-user-select: none;
+	   		-ms-user-select: none;
+	   		user-select: none;
+	   		margin-bottom: 5px;
+		}
+		.dbdiv:hover{
+			border: 2px solid #5FBDB4;
+			cursor: pointer;
+		}
+		.drop-result{
+			z-index: 9999;
+			opacity:0.7;
+			padding:10px;
+		}
+		.drop-result:hover{
+			background: #f9f39e;
+			opacity:1;
+		}
+		.droparea{
+			width:95%;
+			min-height:300px;
+			margin:5px 20px;
+		}
+	</style>
+	<script src="$!globals_sys_basename/common/js/customForm.js"></script>
+	<input type="hidden" name="$!inputname" value=''>
+	<div class="layui-row">
+		<div class="layui-col-xs3">
+			<div id="dragArea">
+				<div class="layui-tab layui-tab-card">
+					<ul class="layui-tab-title">
+						<li class="layui-this">可用字段</li>
+						<li>新建字段</li>
+					</ul>
+					<div class="layui-tab-content">
+						<div class="layui-tab-item layui-show">
+							#foreach($ex in $exlist)
+							<div class="layui-block dbdiv" datatype="$!ex.type" droptype="2">
+								<input type="hidden" name="showf" value="$!ex.showf">
+								<input type="hidden" name="name" value="$!ex.name">
+								<input type="hidden" name="tvalue" value='$!ex.tvalue'>
+								<input type="hidden" name="checktype" value='$!ex.checktype'>
+								<div class="layui-inline" >
+									#if($!ex.type=='input')
+										<i class="layui-icon-zchoose-list-l"></i>
+									#elseif($!ex.type=='date')
+										<i class="layui-icon-riqi"></i>
+									#elseif($!ex.type=='textarea')
+										<i class="layui-icon-zchoose-list-l"></i>
+									#elseif($!ex.type=='select')
+										<i class="layui-icon-zzchevron-down"></i>
+									#elseif($!ex.type=='checkbox')
+										<i class="layui-icon-zzcheck-square-o"></i>
+									#end
+									$!ex.showf
+								</div>
+								<div class="layui-inline div-right" >
+									<i class="layui-icon-zzarrows"></i>
+								</div>
+							</div>
+							#end
+						</div>
+						<div class="layui-tab-item">
+							<div class="layui-block dbdiv" datatype="input" droptype="1">
+								<div class="layui-inline" >
+									<i class="layui-icon-zchoose-list-l"></i>单行文本
+								</div>
+								<div class="layui-inline div-right" >
+									<i class="layui-icon-zzarrows"></i>
+								</div>
+							</div>
+							<div class="layui-block dbdiv" datatype="textarea" droptype="1">
+								<div class="layui-inline" >
+									<i class="layui-icon-zchoose-list-l"></i>多行文本
+								</div>
+								<div class="layui-inline div-right" >
+									<i class="layui-icon-zzarrows"></i>
+								</div>
+							</div>
+							<div class="layui-block dbdiv" datatype="date" droptype="1">
+								<div class="layui-inline" >
+									<i class="layui-icon-riqi"></i>日期
+								</div>
+								<div class="layui-inline div-right" >
+									<i class="layui-icon-zzarrows"></i>
+								</div>
+							</div>
+							<div class="layui-block dbdiv" datatype="select" droptype="1">
+								<div class="layui-inline" >
+									<i class="layui-icon-zzchevron-down"></i>单选
+								</div>
+								<div class="layui-inline div-right" >
+									<i class="layui-icon-zzarrows"></i>
+								</div>
+							</div>
+							<div class="layui-block dbdiv" datatype="checkbox" droptype="1">
+								<div class="layui-inline" >
+									<i class="layui-icon-zzcheck-square-o"></i>多选
+								</div>
+								<div class="layui-inline div-right" >
+									<i class="layui-icon-zzarrows"></i>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="layui-col-xs9">
+			<div id="dropArea" class="droparea">
+				#foreach($ex in $extralist)
+				<div id="$!ex.name" class="layui-form-item drop-result">
+					<input type="hidden" name="type" value="$!ex.type">	
+					<input type="hidden" name="name" value="$!ex.name">
+					<input type="hidden" name="checktype" value="$!ex.checktype">
+					<input type="hidden" name="showf" value="$!ex.showf">
+					<input type="hidden" name="tvalue" value='$!ex.tvalue'>
+					<label class="layui-form-label">$!ex.showf：</label>
+					<div class="layui-input-inline" style="width:60%">
+						#if($!ex.type=='input')
+						<input type="text" name="$!ex.name" lay-verify="required" placeholder="$!ex.showf" autocomplete="off"
+							class="layui-input" value="$!ex.tvalue" readonly>
+						#elseif($!ex.type=='date')
+						<input type="text" name="$!ex.name" lay-verify="required" placeholder="$!ex.showf" autocomplete="off"
+							class="layui-input Wdate" value="$!ex.tvalue" readonly>
+						#elseif($!ex.type=='textarea')
+						<textarea name="$!ex.name" placeholder="$!ex.showf" class="layui-textarea limitH" maxlength="200" readonly>$!ex.tvalue</textarea>
+						#elseif($!ex.type=='select')
+						<select name="$!ex.name">
+							#foreach($op in $ex.tvalue)
+							<option value="$!op">$!op</option>
+							#end
+						</select>
+						#elseif($!ex.type=='checkbox')
+							#foreach($op in $ex.tvalue)
+							<input type="checkbox" lay-skin="primary" name="$!ex.name" title="$op" value="$op" />
+							#end
+						#end
+					</div>
+					<div class="layui-word-aux">
+						<a class="layui-btn layui-btn-xs layui-btn-danger"
+							onclick="delthis('$!ex.name')">删除</a>
+					</div>
+				</div>
+				#end
+			</div>
+		</div>
+	</div>
+#end
+			<!--supertable列表-->
+#macro(initSupertable $oplist $list $skin $rownum $colnum $minus)
+	#if(!$skin) #set($skin = 'sSky') #end
+	#if(!$rownum) #set($rownum = 1) #end
+	#if(!$colnum) #set($colnum = 2) #end
+	<style>		
+	.layui-table-tool-panel{
+		height:250px;
+		overflow-y: auto;
+		top:unset;
+	}
+	.fieldul>li>.layui-form-checkbox{
+		width:120px !important
+	}
+	.fieldul>li>.layui-form-switch{
+		margin:0px 0px 0px 10px;
+	}
+	.zmtab_tfields_flag{
+		display: none;
+	}
+	.fakeContainer { /* The parent container */
+		margin: 0 0 20px;
+		border: none;
+		width: 100%; /* Required to set */
+		height: auto; /* Required to set */
+		overflow: hidden; /* Required to set */
+		margin-top: 5px;
+	}
+	.layui-checkbox-disbaled{
+		background-color: unset !important;
+	}
+	</style>
+	<div class="layui-row">
+              <div class="layui-inline">
+              	<button id="panelbtn" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-primary" type="button" onclick="openPanel(this)"><i class="layui-icon-down "></i>编辑列表</button> 
+           </div>
+           <div class="layui-inline">
+           	#checkBtnRightShow("SRB201907superadmin012","exportData()","",false,"layui-btn layui-btn-sm layui-btn-radius layui-btn-primary")
+           </div>
+           <!-- <div class="layui-inline">
+           	<button class="layui-btn layui-btn-sm layui-btn-radius layui-btn-primary" type="button" onclick="uploadData()"><i class="layui-icon-zupload-l "></i>批量导入</button>                
+           </div> -->
+        </div>
+        <input type="hidden" name="op_remodule" value="$!oplist.op_remodule">
+        <input type="hidden" name="op_modulecode" value="$!oplist.op_modulecode">
+        <input type="hidden" name="orderby" value="">
+        <script type="text/javascript" src="$!globals_sys_basename/plugins/superTables/superTables.js"></script>
+        <link rel="stylesheet" href="$!globals_sys_basename/plugins/superTables/superTables.css" media="all">
+        <script type="text/javascript">
+        	var flist = $!oplist.allfields,oplist = $!oplist.showfields,oplist_old = $!oplist.showfields;
+        	//编辑表格
+        	function openPanel(obj){
+        		closePanel();
+        		loadPanel(obj);
+        		//阻止panel点击事件冒泡
+        		$('.layui-table-tool-panel').on('click',function(e){
+         		 e.stopPropagation();
+         	});
+         	$('#obtn2').unbind('click');
+         	$('#obtn2').bind('click',function(e){
+         		 e.stopPropagation();
+         	});
+        	}
+        	//渲染宽度
+        	function setWidth(obj){
+        		var fcode = $(obj).parent().find('input').eq(0).attr('fcode');
+        		var widthinput = $(obj).parent().find('input').eq(1);
+        		if(isNaN(widthinput.val())){
+        			alert(widthinput.val());
+        			widthinput.focus();
+       				layer.msg('请输入数字');
+       				return;
+        		}
+        		$('.zmtab_'+fcode).css({'width':widthinput.val()});
+        	}
+        	//关闭panel
+        	function closePanel(){
+        		if($('.layui-table-tool-panel').length>0){
+        			tempsave();
+        			$('.layui-table-tool-panel').remove();
+        		}
+        	}
+        	//重置
+        	function resetFields(){
+        		oplist = oplist_old;
+        		$('.layui-table-tool-panel').remove();
+        		loadPanel($('#panelbtn'));
+        		for(var p in oplist){
+        			$('.zmtab_'+oplist[p].code).show();
+        		}
+        	}
+        	//确定
+        	function setFields(){
+        		var show_jsonarr = [],all_jsonarr = [],flag=true;
+        		$('.fieldul').find('li').each(function(){
+        			var checkbox = $(this).find('input').eq(0),
+        			widthinput = $(this).find('input').eq(1),
+        			sort = $(this).find('input').eq(2),
+        			edit = $(this).find('input').eq(3),
+        			detail = $(this).find('input').eq(4),
+        			hashtable_key = $(this).find('input').eq(5),
+        			all_jsonObj = {},
+        			show_jsonObj = {};
+        			/*
+        			layui渲染checkbox后,勾选不会改变原始checkbox的checked属性,
+        			此时需要判断渲染的div是否拥有layui-form-checked,
+        			后面排序亦是如此.
+        			*/
+        			if(checkbox.next().hasClass('layui-form-checked')){
+        				if(isNaN(widthinput.val())){
+         				flag=false;
+         				widthinput.focus();
+         				layer.msg('请输入数字');
+         				return false;//跳出循环
+         			}
+         			show_jsonObj.code = checkbox.attr('fcode');
+        				show_jsonObj.fcode = checkbox.val();
+        				show_jsonObj.fname = checkbox.attr('title');
+        				show_jsonObj.fwidth = widthinput.val();
+        				show_jsonObj.issort = sort.next().hasClass('layui-form-onswitch')?1:0;
+        				show_jsonObj.isedit = edit.val();
+        				show_jsonObj.isdetail = detail.val();
+        				show_jsonObj.hashtable_key = hashtable_key.val();
+        				show_jsonarr.push(show_jsonObj);
+        			}
+        			all_jsonObj.code = checkbox.attr('fcode');
+       				all_jsonObj.fcode = checkbox.val();
+       				all_jsonObj.fname = checkbox.attr('title');
+       				all_jsonObj.fwidth = widthinput.val();
+       				all_jsonObj.issort = sort.next().hasClass('layui-form-onswitch')?1:0;
+       				all_jsonObj.isedit = edit.val();
+       				all_jsonObj.isdetail = detail.val();
+       				all_jsonObj.hashtable_key = hashtable_key.val();
+       				all_jsonarr.push(all_jsonObj);
+        		});
+        		if(flag){
+        		jQuery.post(
+			"$!globals_sys_basename/private/base/list_opconfig.zm",
+			{
+			"doAction":"setFields",
+			"remodule":form1.op_remodule.value,
+			"modulecode":form1.op_modulecode.value,
+			"showfields":JSON.stringify(show_jsonarr),
+			"allfields":JSON.stringify(all_jsonarr)
+			},
+			function(result){
+				var r = JSON.parse(result);
+				if(r.isok){
+					$('.layui-table-tool-panel').remove();
+					TopLayer.msg("配置成功!",{icon:1});
+					form1.submit();
+				}else{
+					TopLayer.msg("配置失败!",{icon:0});
+				}
+   		});
+        		}
+        	}
+        	//排序
+        	function orderBy(field,order){
+        		var orderby = " order by "+field+" "+order;
+        		form1.orderby.value = orderby;
+        		form1.submit();
+        	}
+        	//操作暂存
+        	function tempsave(){
+        		var show_jsonarr = [];
+        		$('.fieldul').find('li').each(function(){
+        			var checkbox = $(this).find('input').eq(0),
+        			widthinput = $(this).find('input').eq(1),
+        			sort = $(this).find('input').eq(2),
+        			edit = $(this).find('input').eq(3),
+        			detail = $(this).find('input').eq(4),
+        			hashtable_key = $(this).find('input').eq(5),
+        			show_jsonObj = {};
+        			if(checkbox.next().hasClass('layui-form-checked')){
+         			show_jsonObj.code = checkbox.attr('fcode');
+        				show_jsonObj.fcode = checkbox.val();
+        				show_jsonObj.fname = checkbox.attr('title');
+        				show_jsonObj.fwidth = widthinput.val();
+        				show_jsonObj.issort = sort.next().hasClass('layui-form-onswitch')?1:0;
+        				show_jsonObj.isedit = edit.val();
+        				show_jsonObj.isdetail = detail.val();
+        				show_jsonObj.hashtable_key = hashtable_key.val();
+        				show_jsonarr.push(show_jsonObj);
+        			}
+        		});
+        		oplist = show_jsonarr;
+        	}
+        	//渲染panel
+        	function loadPanel(obj){
+        		var panel = $('<div class="layui-table-tool-panel" style="z-index:999;padding-bottom:0px !important;"></div>'),
+        		btnDiv = $('<div style="position:sticky;bottom:0;width:100%;height:40px;background:#e2e2e2;"></div>'),
+        		btngroup = $('<div style="height:40px;line-height:40px;text-align:center;"></div>'),
+        		btn1 = $('<button class="layui-btn layui-btn-xs layui-btn-primary nopop" style="margin-top:0px;" type="button" onclick="setFields()">确定</button>'),
+        		btn2 = $('<button class="layui-btn layui-btn-xs layui-btn-primary nopop" style="margin-top:0px;" type="button" onclick="resetFields()">重置</button>'),
+        		btn3 = $('<button class="layui-btn layui-btn-xs layui-btn-primary nopop" style="margin-top:0px;" type="button" onclick="closePanel(this)">关闭</button>'),
+        		ul = $('<ul class="fieldul"></ul>'),
+        		lis = [];
+        		for(var i=0;i<flist.length;i++){
+        			var checked = '',fwidth = '',issort = '',isedit = '',disabled = 'disabled',disabledClass = 'lauyui-disabled';
+        			for(var j=0;j<oplist.length;j++){
+        				if(flist[i].code==oplist[j].code){
+        					checked = 'checked';
+        					fwidth = oplist[j].fwidth;
+        					issort = oplist[j].issort==1?"checked":"";
+        					isedit = oplist[j].isedit==0?"disabled":"";
+        					disabled = '';
+        					disabledClass = '';
+        					break;
+        				}
+        			}
+        			lis.push('<li><input type="checkbox" name="tfield" fcode="'+ flist[i].code +'" value="'+ flist[i].fcode +'" lay-filter="fields" lay-skin="primary" title="'+ flist[i].fname +'" '+checked+' '+isedit+'>'+
+        					'<input type="text" class="'+disabledClass+'" name="fwidth" placeholder="字段宽度" style="margin-left:10px;width:80px;height:25px" value="'+fwidth+'" checkType="IntegeCheck" '+disabled+'>'+
+        					//'<i class="layui-icon-refresh-2" title="渲染宽度" onclick="setWidth(this)"></i>'+
+        					'<input type="checkbox" class="'+disabledClass+'" name="issort" lay-skin="switch" lay-text="排序|排序" style="margin-left:10px" '+issort+' '+disabled+'>'+
+        					'<input type="hidden" name="isedit" value="'+flist[i].isedit+'">'+
+        					'<input type="hidden" name="isdetail" value="'+flist[i].isdetail+'">'+
+        					'<input type="hidden" name="hastable_key" value="'+flist[i].hashtable_key+'">'+
+        					'</li>')
+        		}
+        		panel.append(ul.html(lis.join(""))).append(btnDiv.append(btngroup.append(btn1).append(btn2).append(btn3)));
+        		$(obj).parent().append(panel);
+        		GForm.render();
+        	}
+        	layui.use(['form'], function(){
+  	var form = layui.form;
+  	form.on('checkbox(fields)', function(data){
+	  if(!data.elem.checked){
+	  	//排序开关
+	  	$(data.elem).parent().find('input[name="issort"]').addClass('layui-disabled').prop("disabled",true).prop("checked",false);
+	 	//字段宽度
+	 	$(data.elem).parent().find('input[name="fwidth"]').addClass('layui-disabled').prop("disabled",true).val('');
+	 	//隐藏列
+	 	$('.zmtab_'+$(data.elem).attr('fcode')).hide();
+	  }else{
+	  	//排序开关
+	  	$(data.elem).parent().find('input[name="issort"]').removeClass('layui-disabled').prop("disabled",false);
+	  	//字段宽度
+	 	$(data.elem).parent().find('input[name="fwidth"]').removeClass('layui-disabled').prop("disabled",false);
+	 	//显示列
+	 	$('.zmtab_'+$(data.elem).attr('fcode')).show();
+	  }
+	  GForm.render();
+	}); 
+}); 
+
+//批量导出
+function exportData(){
+       var url = form1.action+"?doAction=export";
+       if(getSelectCount(form1.id)==0){
+       	url+="&"+$('form[name="form1"]').serialize();
+       }else{
+       	url+="&checkids="+getSelectValueByName("id",",");
+      	}
+       window.location.href = url;
+}
+var tableoptions =  {
+	cssSkin : '$!skin',
+	headerRows : $!rownum,
+	fixedCols : $!colnum
+};
+$(function(){
+	for(var i=0;i<oplist.length;i++){
+		$('.zmtab_'+oplist[i].code).show();
+	}
+	creatSuperTable();
+	//阻止按钮点击事件冒泡
+      	$('#panelbtn').on('click',function(e){
+      		 e.stopPropagation();
+      	});
+      	//全局点击事件
+      	$(document).on('click',function(e){
+      		if(!$(e.target).hasClass('nopop')){
+      			closePanel();
+      		}
+      	});
+})
+
+function creatSuperTable(){
+	var sppObj = $(".spp");
+	console.log("--->"+sppObj.length);
+	if(sppObj.length>0&&$(".fakeContainer").attr("minus")!=""&&$(".fakeContainer").attr("minus")!=undefined){
+		var pph = sppObj.height();
+		$(".fakeContainer").css("height", pph - parseInt($(".fakeContainer").attr("minus")))+"px";
+	}
+	new superTable("designTable",tableoptions);
+}
+layui.use(['form'], function(){
+  	var form = layui.form;
+  	form.on('checkbox(checkAll)', function(data){
+		var _name = $(data.elem).attr("target-name");
+	  	var nextCheckBoxs=$('.fakeContainer').find('input[type=checkbox][name='+_name+']:not([disabled])');
+           var isChecked=false;
+           if(data.elem.checked){
+               isChecked=true;
+           }
+           nextCheckBoxs.prop('checked',isChecked);
+           form.render('checkbox');
+	});
+});
+</script>
+<div class="fakeContainer" minus="$!minus">   
+      <table id="designTable">
+      	<thead>
+       	<tr class="tr-1">
+       		<th style="width:50px;min-width:50px;" class="center"><input type="checkbox" lay-skin="primary" lay-filter="checkAll" target-name="id" /></th>
+			<th nowrap="nowrap" class="" style="width:70px;min-width:30px;"></th>
+			#foreach($fields in $!oplist.allfields)
+               	<th nowrap="nowrap" class="zmtab_tfields_flag zmtab_$!fields.getString("code")"  style="width:#if($!fields.getString("fwidth")!="")$!{fields.getString("fwidth")}px #else 100px #end;min-width: #if($!fields.getString("fwidth")!="")$!{fields.getString("fwidth")}px #else 100px #end">
+               		<div class="layui-table-cell">
+                		<span>$!{fields.getString("fname")}</span>
+                		#if($!fields.getInteger("issort")==1)
+                		<span class="layui-table-sort layui-inline">
+                			<i class="layui-edge layui-table-sort-asc" onclick="orderBy('$!{fields.getString("code")}','asc')" title="升序"></i>
+                			<i class="layui-edge layui-table-sort-desc" onclick="orderBy('$!{fields.getString("code")}','desc')" title="降序"></i>
+                		</span>
+                		#end
+               		</div>
+               	</th>
+               #end
+           </tr>
+          </thead>
+          <tbody>
+           #foreach($obj in $list)
+           <tr class="tr-1">
+           	<td align="center">
+				<input type="checkbox" class="" name="id" lay-skin="primary" value="$!obj.indexno" />
+			</td>
+			<td nowrap="nowrap" align="center">
+				<div class="layui-inline">
+					#checkBtnRightShow("SRB201907superadmin008","OPByAction(form1.action,'修改',0,0,{indexno:'$!obj.indexno'},'toupdate',true)","",true,"")
+				</div>
+				<div class="layui-inline" id="focus_$!obj.indexno">
+					<i class="layui-icon-zheart-l" style="margin-left: 5px" title="添加关注" onclick="focuson(this,'$!obj.indexno')"></i>
+				</div>
+			</td>
+               #foreach($fields in $!oplist.allfields)
+               	<td nowrap="nowrap" align="left" class="zmtab_tfields_flag zmtab_$!fields.getString("code")">
+               		#if($fields.getInteger("isdetail")==1)
+               			<a style="color:blue" href="javascript:OPByAction(form1.action,'详情',0,0,{indexno:'$!obj.indexno'},'detail',true,'','','',true)">$!obj.getString($fields.getString("code"))</a>
+               		#else
+               			#if($fields.getString("hashtable_key")=='')
+               				$!obj.getString($fields.getString("code"))
+               			#else
+               				$!ht.get($fields.getString("hashtable_key")).get($!obj.getString($fields.getString("code")))
+               			#end
+               			
+               		#end
+               	</td>
+               #end
+              </tr>
+           #end
+          </tbody>
+      </table>
+     </div>
+#end
+
+#macro(checkBtnRightShow $btnindexno $clickmethod $otherAtrr $isIcon $classStr)
+	#set($showObj = $!ResouceUtil.getBtnObj($!session_sys_user,$!btnindexno))
+	#if(!$classStr)#set($classStr = 'layui-btn layui-btn-sm layui-btn-icon')#end
+	#if($!showObj.indexno == $btnindexno)
+		#if($!isIcon)
+		<i class="$!showObj.icon $!classStr" id="$!showObj.domid" #if($!showObj.state==1) onclick="$!clickmethod" #end #if($!otherAtrr) $!otherAtrr #end></i>	
+	    #else
+	    <button type="button" class="$!classStr #if($!showObj.state!=1) layui-btn-disabled #end" id="$!showObj.domid" #if($!showObj.state==1) onclick="$!clickmethod" #end #if($!otherAtrr) $!otherAtrr #end>
+	      #if($!showObj.icon)
+	      <i class="$!showObj.icon"></i>$!showObj.btnname
+	      #else
+	      $!showObj.btnname
+	      #end
+	    </button>
+	    #end
+	#end
+#end

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>监测列表</title>
+<style type="text/css">
+html{height:100%}
+body{height:100%;margin:0px;padding:0px}
+</style>
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="http://unpkg.com/view-design/dist/styles/iview.css">
+<script type="text/javascript" src="http://vuejs.org/js/vue.min.js"></script>
+<script type="text/javascript" src="http://unpkg.com/view-design/dist/iview.min.js"></script>
+</head>
+
+<body>
+<div id="app">
+	<Card :style="{'min-width':'280px','min-height': '800px'}">
+		<i-row style="padding: 5px 0px 20px 0px;">
+			<Col span="8">
+			<i-button-group>
+				<i-button @click="toAdd" type="primary"> <i-icon type="md-add" />比较</i-button>
+			</i-button-group>
+			</Col>
+		</i-row>
+		<i-table border ref="selection" :columns="list_columns" :data="list_data" :max-height="800" style="margin-top: 10px"></i-table>
+	</Card>
+</div>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            list_columns: [
+                {
+                    type: 'selection',
+                    width: 60,
+                    align: 'center'
+                },
+                {
+                    title:"序号",
+                    align: 'center',
+                    width:80,
+                    ellipsis: true,
+                    key:"id",
+                },
+                {
+                    title:"测试名称",
+                    align: 'center',
+                    ellipsis: true,
+                    key:"name"
+                },
+                {
+                    title:"开始时间",
+                    align: 'center',
+                    ellipsis: true,
+                    key:"stime"
+                },
+                {
+                    title:"结束时间",
+                    align: 'center',
+                    ellipsis: true,
+                    key:"etime"
+                },
+                {
+                    title:"时长",
+                    align: 'center',
+                    ellipsis: true,
+                    width:120,
+                    key:"timerange"
+                },
+                {
+                    title:"测试人",
+                    align: 'center',
+                    ellipsis: true,
+                    width:120,
+                    key:"tester"
+                },
+                {
+                    title: '操作',
+                    key: 'action',
+                    width: 100,
+                    align: 'center',
+                    render: function(h, params){
+                        return h('a', {
+                            on: {
+                                click: function(){
+                                    window.open('/api/private/station.data?doAction=toshow&ids='+params.row.id);
+                                }
+                            }
+                        }, '查看');
+                    }
+                }
+            ],
+            list_data: []
+        },
+        methods: {
+            getList:function() {
+                var _this = this;
+                $.post('/api/private/station.data', {
+                    doAction: 'getGroupData',
+                    page: _this.page,
+                    limit: _this.limit
+                }, function (response) {
+                    if (response.isok) {
+                        _this.list_data = response.list;
+                        _this.total = response.total;
+                    }else {
+                        _this.list_data = [];
+                        alert("后台异常，数据查询失败。请通知相关维护人员进行检查，感谢！");
+                    }
+                })
+            },
+            handleSelectRow:function() {
+                const selection = this.$refs.selection.getSelection();
+                return selection.map(function(item){return item.id});
+            },
+            changePage:function(page) {
+                this.page = page;
+                this.getList(true);
+            },
+            changePageSize:function(limit) {
+                this.limit = limit;
+                this.page = 1;
+                this.getList(true);
+            },
+            toshow:function(ids){
+                window.open('/api/private/station.data?doAction=toshow&ids='+ids);
+            },
+            toAdd:function(){
+                var ids = this.handleSelectRow();
+                if(ids.length != 2){
+                    alert("请选择两条数据来比较！");
+                    return;
+                }
+                this.toshow(ids.join(','));
+            }
+        },
+        mounted:function () {
+            this.getList();
+        }
+    })
+</script>
+</body>
+</html>
